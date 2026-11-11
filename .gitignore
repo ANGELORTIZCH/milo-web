@@ -1,0 +1,8 @@
+# Nunca se publican configuraciones ni claves (segunda barrera; la primera
+# es scripts/revisar_secretos.mjs en el repo privado).
+env*.json
+.env
+.env.*
+*.pem
+*.key
+signing_keys*.json

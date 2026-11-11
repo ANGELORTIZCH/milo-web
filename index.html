@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Milo · Correo confirmado</title>
+<meta name="description" content="Milo, punto de venta para tienditas.">
+<link rel="icon" href="milo/milo-cabeza.svg" type="image/svg+xml">
+<link rel="stylesheet" href="estilos.css">
+<script>
+  // Con JavaScript, se espera a saber qué tarjeta mostrar (sin parpadeo).
+  document.documentElement.classList.add('esperando');
+  // Si el módulo no carga (navegador muy viejo), se muestra el inicio.
+  setTimeout(() => document.documentElement.classList.remove('esperando'), 1500);
+</script>
+<script type="module">
+  import { estadoDesdeUrl, traeDatos } from './confirmacion.js';
+
+  const url = location.href;
+  const estado = estadoDesdeUrl(url);
+  // Los tokens de sesión que manda Supabase no se usan: se borran de la
+  // barra de direcciones y del historial en cuanto se lee el estado.
+  if (traeDatos(url)) history.replaceState(null, '', location.pathname);
+
+  for (const seccion of document.querySelectorAll('[data-estado]')) {
+    seccion.hidden = seccion.dataset.estado !== estado;
+  }
+  document.documentElement.classList.remove('esperando');
+  if (estado !== 'inicio') {
+    document.title = `Milo · ${document.querySelector(`[data-estado="${estado}"] h1`).textContent}`;
+  }
+</script>
+</head>
+<body>
+<header class="barra">
+  <div class="barra-contenido">
+    <img src="milo/milo-cabeza.svg" alt="" width="44" height="48">
+    <span class="nombre">Milo</span>
+  </div>
+</header>
+
+<main>
+  <section class="tarjeta" data-estado="confirmado" hidden>
+    <img src="milo/milo-venta-lista.svg" alt="Milo festejando" width="128" height="160">
+    <h1>¡Listo! Tu correo está confirmado</h1>
+    <p>Regresa a Milo en tu tablet y toca <strong>“Ya confirmé, entrar”</strong>.</p>
+    <p class="secundario">Ya puedes cerrar esta página.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="recuperacion" hidden>
+    <img src="milo/milo-base.svg" alt="Milo" width="128" height="160">
+    <h1>Crea tu contraseña nueva</h1>
+    <p>Este enlace es para cambiar tu contraseña, pero aquí todavía no se puede hacer.</p>
+    <p class="secundario">Escríbele a tu asesor de Milo y te ayuda a entrar.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="vencido" hidden>
+    <img src="milo/milo-base.svg" alt="Milo" width="128" height="160">
+    <h1>Este enlace ya no sirve</h1>
+    <p>Los enlaces de confirmación vencen y solo se pueden usar una vez. Si ya entraste a Milo, no tienes que hacer nada.</p>
+    <p class="secundario">Si todavía no puedes entrar, en la app toca <strong>“Crear cuenta de dueño”</strong> con el mismo correo y te mandaremos un enlace nuevo.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="error" hidden>
+    <img src="milo/milo-base.svg" alt="Milo" width="128" height="160">
+    <h1>No pudimos confirmar tu correo</h1>
+    <p>Vuelve a abrir el enlace del correo en unos minutos.</p>
+    <p class="secundario">Si sigue sin funcionar, en la app toca <strong>“Crear cuenta de dueño”</strong> con el mismo correo para recibir un enlace nuevo.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="inicio">
+    <img src="milo/milo-hola.svg" alt="Milo saludando" width="128" height="160">
+    <h1>¡Hola! Soy Milo</h1>
+    <p>Te ayudo a vender en tu tiendita.</p>
+    <p class="secundario">Milo se usa desde la app en tu tablet.</p>
+  </section>
+</main>
+
+<footer>Milo · Punto de venta para tienditas</footer>
+</body>
+</html>
