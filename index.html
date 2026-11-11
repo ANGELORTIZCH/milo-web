@@ -19,6 +19,11 @@
 
   const url = location.href;
   const estado = estadoDesdeUrl(url);
+  // Un enlace de "¿Olvidaste tu contraseña?" que cayó aquí (por ejemplo, si
+  // nueva-contrasena/ aún no está en Redirect URLs) sigue a su página.
+  if (estado === 'recuperacion') {
+    location.replace(`nueva-contrasena/${location.search}${location.hash}`);
+  }
   // Los tokens de sesión que manda Supabase no se usan: se borran de la
   // barra de direcciones y del historial en cuanto se lee el estado.
   if (traeDatos(url)) history.replaceState(null, '', location.pathname);
@@ -51,8 +56,8 @@
   <section class="tarjeta" data-estado="recuperacion" hidden>
     <img src="milo/milo-base.svg" alt="Milo" width="128" height="160">
     <h1>Crea tu contraseña nueva</h1>
-    <p>Este enlace es para cambiar tu contraseña, pero aquí todavía no se puede hacer.</p>
-    <p class="secundario">Escríbele a tu asesor de Milo y te ayuda a entrar.</p>
+    <p>Un momento, te llevamos a la página para crearla.</p>
+    <p class="secundario">Si no pasa nada, abre otra vez el enlace del correo.</p>
   </section>
 
   <section class="tarjeta" data-estado="vencido" hidden>

@@ -24,6 +24,10 @@
   --texto: #123a6b;
   --texto-secundario: #4a6585;
   --primario-texto: #1e64b4;
+  --primario-oscuro: #1e64b4;
+  --primario-borde: #b9d6f3;
+  --aviso-suave: #fef3c7;
+  --aviso-texto: #b45309;
   --radio-tarjeta: 24px;
 }
 
@@ -98,6 +102,59 @@ footer {
   padding: 0 16px 24px;
   font-size: 14px;
   color: var(--texto-secundario);
+}
+
+/* Formulario (nueva contraseña): campos y botón píldora, como la app. */
+form { text-align: left; margin-top: 20px; display: flex; flex-direction: column; gap: 16px; }
+label { display: block; font-size: 14px; font-weight: 600; color: var(--texto-secundario); margin: 0 0 6px 16px; }
+.campo { position: relative; }
+.campo input {
+  width: 100%;
+  height: 56px;
+  padding: 0 60px 0 20px;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  font-size: 18px;
+}
+.campo input:focus { outline: none; border: 2px solid #5da3e6; padding-left: 19px; }
+.ojo {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-secundario);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.ojo:hover { background: var(--fondo); }
+.ojo svg { width: 24px; height: 24px; }
+.boton {
+  height: 56px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--primario-oscuro);
+  color: #ffffff;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.boton:hover { background: var(--texto); }
+.boton:disabled { background: var(--primario-borde); cursor: default; }
+.aviso {
+  border-radius: 16px;
+  padding: 12px 16px;
+  background: var(--aviso-suave);
+  color: var(--aviso-texto);
+  text-align: left;
 }
 
 [hidden] { display: none !important; }

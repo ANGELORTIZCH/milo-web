@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Milo · Crea tu contraseña nueva</title>
+<link rel="icon" href="../milo/milo-cabeza.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../estilos.css">
+<script>
+  // Con JavaScript, se espera a saber qué mostrar (sin parpadeo).
+  document.documentElement.classList.add('esperando');
+  setTimeout(() => document.documentElement.classList.remove('esperando'), 1500);
+</script>
+<script type="module">
+  import { proyectos } from './proyectos.js';
+  import { guardarContrasena, leerEnlace, mensajes, revisarContrasena } from './recuperacion.js';
+
+  const enlace = leerEnlace(location.href, proyectos);
+  // La sesión de recuperación se queda solo en memoria: fuera de la barra de
+  // direcciones y del historial.
+  if (location.search || location.hash) history.replaceState(null, '', location.pathname);
+
+  const mostrar = (estado) => {
+    for (const s of document.querySelectorAll('[data-estado]')) s.hidden = s.dataset.estado !== estado;
+    document.documentElement.classList.remove('esperando');
+  };
+  mostrar(enlace.estado);
+
+  const formulario = document.querySelector('form');
+  const aviso = document.getElementById('aviso');
+  const boton = formulario.querySelector('button[type="submit"]');
+  const avisar = (texto) => {
+    aviso.textContent = texto;
+    aviso.hidden = !texto;
+  };
+
+  // Botón de ojo: muestra u oculta lo escrito (empieza oculto).
+  for (const ojo of document.querySelectorAll('.ojo')) {
+    ojo.addEventListener('click', () => {
+      const campo = document.getElementById(ojo.getAttribute('aria-controls'));
+      const ver = campo.type === 'password';
+      campo.type = ver ? 'text' : 'password';
+      ojo.setAttribute('aria-label', ver ? 'Ocultar contraseña' : 'Mostrar contraseña');
+      ojo.setAttribute('aria-pressed', String(ver));
+    });
+  }
+
+  formulario.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    const contrasena = formulario.contrasena.value;
+    const problema = revisarContrasena(contrasena, formulario.repetida.value);
+    if (problema) return avisar(problema);
+    avisar('');
+    boton.disabled = true;
+    boton.textContent = 'Guardando…';
+    const resultado = await guardarContrasena({ ...enlace, contrasena });
+    boton.disabled = false;
+    boton.textContent = 'Guardar contraseña';
+    if (resultado === 'listo') return mostrar('listo');
+    if (resultado === 'vencido') return mostrar('vencido');
+    avisar(mensajes[resultado]);
+  });
+</script>
+</head>
+<body>
+<header class="barra">
+  <div class="barra-contenido">
+    <img src="../milo/milo-cabeza.svg" alt="" width="44" height="48">
+    <span class="nombre">Milo</span>
+  </div>
+</header>
+
+<main>
+  <section class="tarjeta" data-estado="formulario" hidden>
+    <img src="../milo/milo-hola.svg" alt="Milo saludando" width="128" height="160">
+    <h1>Crea tu contraseña nueva</h1>
+    <p class="secundario">Escríbela dos veces. Debe tener al menos 8 caracteres.</p>
+    <form novalidate>
+      <div>
+        <label for="contrasena">Contraseña nueva</label>
+        <div class="campo">
+          <input id="contrasena" name="contrasena" type="password" autocomplete="new-password" required minlength="8">
+          <button class="ojo" type="button" aria-controls="contrasena" aria-label="Mostrar contraseña" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div>
+        <label for="repetida">Repítela</label>
+        <div class="campo">
+          <input id="repetida" name="repetida" type="password" autocomplete="new-password" required minlength="8">
+          <button class="ojo" type="button" aria-controls="repetida" aria-label="Mostrar contraseña" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <p id="aviso" class="aviso" role="status" hidden></p>
+      <button class="boton" type="submit">Guardar contraseña</button>
+    </form>
+  </section>
+
+  <section class="tarjeta" data-estado="listo" hidden>
+    <img src="../milo/milo-venta-lista.svg" alt="Milo festejando" width="128" height="160">
+    <h1>¡Listo! Ya tienes contraseña nueva</h1>
+    <p>En la tablet toca <strong>“Entrar como dueño”</strong> y escríbela. Se necesita internet solo esta vez.</p>
+    <p class="secundario">Ya puedes cerrar esta página.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="vencido" hidden>
+    <img src="../milo/milo-base.svg" alt="Milo" width="128" height="160">
+    <h1>Este enlace ya no sirve</h1>
+    <p>Los enlaces para cambiar la contraseña vencen y solo se pueden usar una vez.</p>
+    <p class="secundario">En la app toca <strong>“¿Olvidaste tu contraseña?”</strong> para que te mandemos otro.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="sinEnlace">
+    <img src="../milo/milo-base.svg" alt="Milo" width="128" height="160">
+    <h1>Abre esta página desde tu correo</h1>
+    <p>Para crear una contraseña nueva, usa el enlace que te mandamos.</p>
+    <p class="secundario">¿No te llegó? En la app toca <strong>“¿Olvidaste tu contraseña?”</strong>.</p>
+  </section>
+
+  <section class="tarjeta" data-estado="error" hidden>
+    <img src="../milo/milo-base.svg" alt="Milo" width="128" height="160">
+    <h1>No pudimos abrir este enlace</h1>
+    <p>Vuelve a abrir el enlace del correo.</p>
+    <p class="secundario">Si sigue sin funcionar, en la app toca <strong>“¿Olvidaste tu contraseña?”</strong> para pedir otro.</p>
+  </section>
+</main>
+
+<footer>Milo · Punto de venta para tienditas</footer>
+</body>
+</html>
