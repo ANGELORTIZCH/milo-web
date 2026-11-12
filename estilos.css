@@ -157,6 +157,35 @@ label { display: block; font-size: 14px; font-weight: 600; color: var(--texto-se
   text-align: left;
 }
 
+/* Páginas de texto largo (aviso de privacidad, términos). */
+a.barra-contenido { color: inherit; text-decoration: none; }
+main.documento {
+  max-width: 720px;
+  justify-content: flex-start;
+  padding-top: 24px;
+}
+.documento h1 { margin-bottom: 4px; }
+.documento h2 { margin: 32px 0 8px; font-size: 21px; font-weight: 600; line-height: 1.25; scroll-margin-top: 16px; }
+.documento h3 { margin: 20px 0 6px; font-size: 17px; font-weight: 600; }
+.documento ul, .documento ol { margin: 0 0 12px; padding-left: 24px; }
+.documento li { margin-bottom: 6px; }
+.documento p:last-child { margin-bottom: 12px; }
+.resumen {
+  margin: 16px 0;
+  padding: 16px 20px;
+  border: 1px solid var(--primario-borde);
+  border-radius: 16px;
+  background: var(--superficie);
+}
+.indice {
+  padding: 16px 20px 8px;
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  background: var(--superficie);
+}
+.indice li { margin-bottom: 4px; }
+footer a { color: inherit; }
+
 [hidden] { display: none !important; }
 .esperando main { visibility: hidden; }
 
